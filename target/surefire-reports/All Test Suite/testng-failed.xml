@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Failed suite [All Test Suite]" verbose="0">
+  <listeners>
+    <listener class-name="com.hilabsdartui.listeners.RunMultipleTimesListeners"/>
+  </listeners>
+  <test name="DART UI TEST AUTOMATION(failed)" preserve-order="true">
+    <classes>
+      <class name="com.hilabsdartui.testcases.DARTUI_ActionsKeywords">
+        <methods>
+          <include name="startWebDriverAndBrowser"/>
+          <include name="tearDownExtentReport"/>
+          <include name="setupExtentReport"/>
+          <include name="keywordEngine"/>
+        </methods>
+      </class> <!-- com.hilabsdartui.testcases.DARTUI_ActionsKeywords -->
+    </classes>
+  </test> <!-- DART UI TEST AUTOMATION(failed) -->
+</suite> <!-- Failed suite [All Test Suite] -->
