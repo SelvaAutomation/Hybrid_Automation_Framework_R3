@@ -13,7 +13,6 @@ import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ActionsKeywords extends TestBaseClass {

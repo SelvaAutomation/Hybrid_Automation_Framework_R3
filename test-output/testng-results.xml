@@ -2,18 +2,18 @@
 <testng-results total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2023-10-18T13:07:45Z" name="All Test Suite" finished-at="2023-10-18T13:14:19Z" duration-ms="394055">
+  <suite started-at="2023-11-06T16:59:01Z" name="All Test Suite" finished-at="2023-11-06T17:00:58Z" duration-ms="116638">
     <groups>
     </groups>
-    <test started-at="2023-10-18T13:07:45Z" name="R3_Test_Automation" finished-at="2023-10-18T13:14:19Z" duration-ms="394055">
+    <test started-at="2023-11-06T16:59:01Z" name="R3_Test_Automation" finished-at="2023-11-06T17:00:58Z" duration-ms="116638">
       <class name="com.r3.testcases.ActionsKeywords">
-        <test-method is-config="true" signature="setupExtentReport()[pri:0, instance:com.r3.testcases.ActionsKeywords@7c729a55]" started-at="2023-10-18T13:07:44Z" name="setupExtentReport" finished-at="2023-10-18T13:07:45Z" duration-ms="1409" status="PASS">
+        <test-method is-config="true" signature="setupExtentReport()[pri:0, instance:com.r3.testcases.ActionsKeywords@4d1b0d2a]" started-at="2023-11-06T16:59:01Z" name="setupExtentReport" finished-at="2023-11-06T16:59:01Z" duration-ms="392" status="PASS">
         </test-method> <!-- setupExtentReport -->
-        <test-method is-config="true" signature="startWebDriverAndBrowser()[pri:0, instance:com.r3.testcases.ActionsKeywords@7c729a55]" started-at="2023-10-18T13:07:45Z" name="startWebDriverAndBrowser" finished-at="2023-10-18T13:07:59Z" duration-ms="13762" status="PASS">
+        <test-method is-config="true" signature="startWebDriverAndBrowser()[pri:0, instance:com.r3.testcases.ActionsKeywords@4d1b0d2a]" started-at="2023-11-06T16:59:01Z" name="startWebDriverAndBrowser" finished-at="2023-11-06T16:59:08Z" duration-ms="6766" status="PASS">
         </test-method> <!-- startWebDriverAndBrowser -->
-        <test-method signature="keywordEngine()[pri:1, instance:com.r3.testcases.ActionsKeywords@7c729a55]" started-at="2023-10-18T13:07:59Z" name="keywordEngine" finished-at="2023-10-18T13:14:19Z" duration-ms="380277" status="PASS">
+        <test-method signature="keywordEngine()[pri:1, instance:com.r3.testcases.ActionsKeywords@4d1b0d2a]" started-at="2023-11-06T16:59:08Z" name="keywordEngine" finished-at="2023-11-06T17:00:58Z" duration-ms="109863" status="PASS">
         </test-method> <!-- keywordEngine -->
-        <test-method is-config="true" signature="tearDownExtentReport()[pri:0, instance:com.r3.testcases.ActionsKeywords@7c729a55]" started-at="2023-10-18T13:14:19Z" name="tearDownExtentReport" finished-at="2023-10-18T13:14:20Z" duration-ms="847" status="PASS">
+        <test-method is-config="true" signature="tearDownExtentReport()[pri:0, instance:com.r3.testcases.ActionsKeywords@4d1b0d2a]" started-at="2023-11-06T17:00:58Z" name="tearDownExtentReport" finished-at="2023-11-06T17:00:58Z" duration-ms="557" status="PASS">
         </test-method> <!-- tearDownExtentReport -->
       </class> <!-- com.r3.testcases.ActionsKeywords -->
     </test> <!-- R3_Test_Automation -->

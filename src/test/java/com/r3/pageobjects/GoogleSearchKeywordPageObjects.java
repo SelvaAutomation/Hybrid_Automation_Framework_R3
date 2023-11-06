@@ -2,10 +2,10 @@ package com.r3.pageobjects;
 
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
-import com.r3.utility.ExtentManager;
-import com.r3.utility.HTMLCode;
-import com.r3.utility.Screenshot;
+import com.r3.utility.*;
 import com.r3.webelements.GoogleSearchKeywordPage_WebElements;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -14,6 +14,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,8 @@ import java.util.List;
 
 public class GoogleSearchKeywordPageObjects {
 	WebDriver driver;
+	String Url = null;
+	R3ExcelReader objR3ExcelReader;
 	WebDriverWait wait;
 	public GoogleSearchKeywordPageObjects(WebDriver TestBaseClassDriver) {
 		driver = TestBaseClassDriver;
@@ -32,9 +35,11 @@ public class GoogleSearchKeywordPageObjects {
 	@FindBy(xpath= GoogleSearchKeywordPage_WebElements.Const_googleSearchResultsList)
 	public List<WebElement> googleSearchResultsList;
 
-
-	public void validateORGPROVInfo_WithPriority1to3(String combinedSearchKeyword_OrgProvPhone,String orgNameKey,
-													 String areaCode,String exchangeCode, String lineNumber ) throws IOException {
+	public void validateORGPROVInfo_WithPriority1to3(int executingRowIndex, String phoneValidationPriority, String ProviderAndOrgPhoneValidation,
+													 String OrganizationPhoneValidation, String ProviderPhoneValidation,
+													 String combinedSearchKeyword_OrgProvPhone, String orgNameKey,
+													 String areaCode, String exchangeCode, String lineNumber ) throws IOException {
+		WriteR3TestResult objWriteR3TestResult = new WriteR3TestResult();
 		try {
 			driver.get("https://www.google.com");
 			googleSearchTextFiled.sendKeys(combinedSearchKeyword_OrgProvPhone, Keys.ENTER);
@@ -58,7 +63,7 @@ public class GoogleSearchKeywordPageObjects {
 						identifyCorrectSearchLinkHeader(eachSearchLinkHeaderWithoutSpace,orgNameKeyWithoutSpace, 40.0))
 						&& eachSearchLinkHeaderWithoutSpace.length()!=0){
 					afterOrgMatchedNameCount++;
-					String Url = driver.findElement(By.xpath(GoogleSearchKeywordPage_WebElements.getORGPROVIDERNameURL(i))).getAttribute("href");
+					Url = driver.findElement(By.xpath(GoogleSearchKeywordPage_WebElements.getORGPROVIDERNameURL(i))).getAttribute("href");
 					String webContent=null;
 					webContent = HTMLCode.get(Url);
 
@@ -86,6 +91,8 @@ public class GoogleSearchKeywordPageObjects {
 							ExtentManager.getExtentTest().log(Status.PASS,("Phone Number is Matching in R3 excel and Web site "+ Url +" >>> "+eachPhoneFormat ),
 									MediaEntityBuilder.createScreenCaptureFromBase64String(Screenshot.getScreenshot()).build());
 							foundPhoneNumber=true;
+							objWriteR3TestResult.writePhoneValidationPriority(executingRowIndex,phoneValidationPriority,ProviderAndOrgPhoneValidation,
+																				OrganizationPhoneValidation,ProviderPhoneValidation,Url);
 							break;
 						}else if(count==13 && afterOrgMatchedNameCount==beforeOrgMatchedNameCount){
 							ExtentManager.getExtentTest().log(Status.FAIL,("Phone Number is NOT found in the web content of web site "+ Url ),
@@ -101,6 +108,9 @@ public class GoogleSearchKeywordPageObjects {
 				}else if (i==linkHeaderList.size()-1){
 					ExtentManager.getExtentTest().log(Status.FAIL,("We are not able to find the ORG Web Site link with this search keyword >> "+ combinedSearchKeyword_OrgProvPhone),
 							MediaEntityBuilder.createScreenCaptureFromBase64String(Screenshot.getScreenshot()).build());
+					objWriteR3TestResult.writePhoneValidationPriority(executingRowIndex,phoneValidationPriority,ProviderAndOrgPhoneValidation,
+							OrganizationPhoneValidation,ProviderPhoneValidation,Url);
+
 				}
 			}
 		} catch (IOException e) {
