@@ -4,14 +4,17 @@ import com.aventstack.extentreports.Status;
 import com.r3.datareader.PropertiesFileReader;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.Assert;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -29,12 +32,23 @@ public class TestBaseClass {
 			String testerName = sheet.getRow(1).getCell(6).toString().trim();
 			String browserName = PropertiesFileReader.getProperty("BrowserName");
 			if(browserName.equalsIgnoreCase("Chrome")) {
-				String chromeDriverPath = PropertiesFileReader.getProperty("ChromeDriverPath");
-				System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+				String ProxyServer = "gate.smartproxy.com";
+				int ProxyPort = 7000;
+				String sHttpProxy = ProxyServer + ":" + ProxyPort;
+				Proxy proxy = new Proxy();
+				proxy.setHttpProxy(sHttpProxy);
+				ChromeDriverService service = new ChromeDriverService.Builder()
+						.usingDriverExecutable(new File( PropertiesFileReader.getProperty("ChromeDriverPath")))
+						.usingAnyFreePort()
+						.build();
 				ChromeOptions options = new ChromeOptions();
 				options.addArguments("start-maximized");
 				options.addArguments("--remote-allow-origins=*");
-				driver = new ChromeDriver(options);
+				options.setCapability("proxy", proxy);
+				options.merge(options);
+				System.setProperty("webdriver.chrome.driver", PropertiesFileReader.getProperty("ChromeDriverPath"));
+
+				driver=new ChromeDriver(service, options);
 			}
 			DriverFactory.setDriver(driver);
 			ExtentReport.createTest(sheetName,tcType,testerName, "Windows");

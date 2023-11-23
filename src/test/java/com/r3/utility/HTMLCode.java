@@ -39,8 +39,6 @@ public class HTMLCode {
                     html = htmlBuilder.toString();
                     reader.close();
                 }
-            } catch (IOException | NullPointerException e1) {
-                e1.printStackTrace();
             }
             return new String(html);
         }

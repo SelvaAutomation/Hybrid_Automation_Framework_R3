@@ -8,20 +8,21 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 public class R3ExcelReader  {
     public XSSFSheet sheet;
     String FirstNameSearchKeyword;
+    String MiddleNameSearchKeyword;
     String LastNameSearchKeyword;
     String CredentialsSearchKeyword;
     String AddressSearchKeyword;
+    String CitySearchKeyword;
+    String ZipSearchKeyword;
     String StateSearchKeyword;
     String PhoneSearchKeyword;
+    LinkedHashSet<String> ProvOrgNameSearchKeywordList;
     String ProvOrgNameSearchKeyword;
     String PhoneValidationPriority;
     String ProviderAndOrgPhoneValidationResult;
@@ -29,11 +30,14 @@ public class R3ExcelReader  {
     String ProvPhoneValidationResult;
     String OrgNameSearchKeyword;
     Map<String, String> ProvMap;
-    Map<String, Map<String, String>> OrgMap;
-    List<Map<String, Map<String,String>>> OrgProvList;
+    Map<LinkedHashSet<String>, Map<String, String>> OrgMap;
+    List<Map<LinkedHashSet<String>, Map<String,String>>> OrgProvList;
     int r3ExecuteRowCount;
-    public List<Map<String, Map<String,String>>> excelDataToList(int executedR3ExcelRowsCount) throws IOException {
+
+    /*Read the Excel before execution*/
+    public List<Map<LinkedHashSet<String>, Map<String,String>>> excelDataToList(int executedR3ExcelRowsCount) throws IOException {
         r3ExecuteRowCount = executedR3ExcelRowsCount;
+        ProvOrgNameSearchKeywordList = new LinkedHashSet<>();
         ProvMap  = new LinkedHashMap<>();
         OrgMap  = new LinkedHashMap<>();
         OrgProvList = new ArrayList<>();
@@ -60,6 +64,20 @@ public class R3ExcelReader  {
                     } catch (NullPointerException ignored) {
                         FirstNameSearchKeyword = "null";
                         ProvMap.put("First Name",FirstNameSearchKeyword);
+                        continue;
+                    }
+
+                    //Fetch the Middle Name from R3 excel
+                    try {
+                        String MiddleNameColHead = sheet.getRow(0).getCell(j).toString().trim();
+                        if(MiddleNameColHead.equalsIgnoreCase("Middle_Name")){
+                            MiddleNameSearchKeyword = sheet.getRow(i + 1).getCell(j).toString().trim();
+                            ProvMap.put("Middle_Name",MiddleNameSearchKeyword);
+                            continue;
+                        }
+                    } catch (NullPointerException ignored) {
+                        MiddleNameSearchKeyword = "null";
+                        ProvMap.put("Middle_Name",MiddleNameSearchKeyword);
                         continue;
                     }
 
@@ -104,6 +122,32 @@ public class R3ExcelReader  {
                         ProvMap.put("Address",AddressSearchKeyword);
                         continue;
                     }
+                    //Fetch the City from R3 excel
+                    try {
+                        String CityColHead = sheet.getRow(0).getCell(j).toString().trim();
+                        if(CityColHead.equalsIgnoreCase("City")){
+                            CitySearchKeyword = sheet.getRow(i + 1).getCell(j).toString().trim();
+                            ProvMap.put("City",CitySearchKeyword);
+                            continue;
+                        }
+                    } catch (NullPointerException ignored) {
+                        CitySearchKeyword = "null";
+                        ProvMap.put("City",CitySearchKeyword);
+                        continue;
+                    }
+                    //Fetch the Zip from R3 excel
+                    try {
+                        String ZipColHead = sheet.getRow(0).getCell(j).toString().trim();
+                        if(ZipColHead.equalsIgnoreCase("Zip")){
+                            ZipSearchKeyword = sheet.getRow(i + 1).getCell(j).toString().trim();
+                            ProvMap.put("Zip",ZipSearchKeyword);
+                            continue;
+                        }
+                    } catch (NullPointerException ignored) {
+                        ZipSearchKeyword = "null";
+                        ProvMap.put("Zip",ZipSearchKeyword);
+                        continue;
+                    }
 
                     //Fetch the State from R3 excel
                     try {
@@ -133,27 +177,48 @@ public class R3ExcelReader  {
                         continue;
                     }
 
-                    //Fetch the Provider_Organization_Name from R3 excel
+                    /*Extracting the Proper Org name task starts here*/
+                    //Fetch the Organization_Name from R3 excel
                     try {
-                        String ProvOrgNameColHead = sheet.getRow(0).getCell(j).toString().trim();
-                        if(ProvOrgNameColHead.equalsIgnoreCase("Provider_Organization_Name")){
-                            ProvOrgNameSearchKeyword = sheet.getRow(i + 1).getCell(j).toString().trim();;
-                            continue;
+                        String OrgNameColHead = sheet.getRow(0).getCell(j).toString().trim();
+                        if(OrgNameColHead.equalsIgnoreCase("Organization_Name")){
+                            OrgNameSearchKeyword = sheet.getRow(i + 1).getCell(j).toString().trim();
+                            String[] orgNameArray1 = OrgNameSearchKeyword.split("\\|\\|?");
+                            for(String eachOrgName: orgNameArray1){
+                                try {
+                                    if(eachOrgName!=null){
+                                        ProvOrgNameSearchKeywordList.add(eachOrgName.trim());
+                                    }
+                                } catch (NullPointerException e) {
+                                    ExtentManager.getExtentTest().log(Status.INFO,("Organization_Name column values are taken from the R3 Report"));
+                                }
+                            }
                         }
-                    } catch (NullPointerException ignored1) {
-                        ProvOrgNameSearchKeyword = "null";
-                        //Fetch the Organization_Name from R3 excel
-                        try {
-                            String OrgNameColHead = sheet.getRow(0).getCell(j-1).toString().trim();
-                            if(OrgNameColHead.equalsIgnoreCase("Organization_Name")){
-                                OrgNameSearchKeyword = sheet.getRow(i + 1).getCell(j-1).toString().trim();
-                                ProvOrgNameSearchKeyword = OrgNameSearchKeyword.split("\\|\\|?")[0];
+                        //Fetch the Provider_Organization_Name from R3 excel
+                        String ProvOrgNameColHead = sheet.getRow(0).getCell(j+1).toString().trim();
+                        if(ProvOrgNameColHead.equalsIgnoreCase("Provider_Organization_Name")) {
+                            try {
+                                ProvOrgNameSearchKeyword = sheet.getRow(i + 1).getCell(j+1).toString().trim();
+                                String[] orgNameArray2 = ProvOrgNameSearchKeyword.split("\\|\\|?");
+                                for (String eachOrgName : orgNameArray2) {
+                                    if (eachOrgName != null) {
+                                        ProvOrgNameSearchKeywordList.add(eachOrgName.trim());
+                                    }
+                                }
+                            } catch (NullPointerException e) {
+                                ExtentManager.getExtentTest().log(Status.INFO, ("Provider_Organization_Name column values are taken from the R3 Report"));
                                 continue;
                             }
-                        } catch (NullPointerException ignored2) {
-                            ExtentManager.getExtentTest().log(Status.INFO,("Provider_Organization_Name and Organization_Name column values are NULL in the R3 excel"));
+                            continue;
                         }
+                    } catch (NullPointerException ignored2) {
+                        ExtentManager.getExtentTest().log(Status.INFO,("Organization_Name column values are taken from the R3 Report"));
+                        continue;
                     }
+
+
+
+                    /*Extracting the Proper Org name task ends here*/
 
                     //Fetch the Phone_Validation_Priority from R3 excel
                     try {
@@ -203,19 +268,21 @@ public class R3ExcelReader  {
                         if(ProvPhoneValidationColHead.equalsIgnoreCase("Provider_Phone_Validation")){
                             ProvPhoneValidationResult= sheet.getRow(i + 1).getCell(j).toString().trim();
                             ProvMap.put("Provider_Phone_Validation",ProvPhoneValidationResult);
-                            OrgMap.put(ProvOrgNameSearchKeyword, new LinkedHashMap<>(ProvMap));
+                            OrgMap.put(new LinkedHashSet<>(ProvOrgNameSearchKeywordList), new LinkedHashMap<>(ProvMap));
                             OrgProvList.add(new LinkedHashMap<>(OrgMap));
                             OrgMap.clear();
                             ProvMap.clear();
+                            ProvOrgNameSearchKeywordList.clear();
                             break;
                         }
                     } catch (NullPointerException ignored) {
                         ProvPhoneValidationResult = "null";
                         ProvMap.put("Provider_Phone_Validation",ProvPhoneValidationResult);
-                        OrgMap.put(ProvOrgNameSearchKeyword, new LinkedHashMap<>(ProvMap));
+                        OrgMap.put(new LinkedHashSet<>(ProvOrgNameSearchKeywordList), new LinkedHashMap<>(ProvMap));
                         OrgProvList.add(new LinkedHashMap<>(OrgMap));
                         OrgMap.clear();
                         ProvMap.clear();
+                        ProvOrgNameSearchKeywordList.clear();
                         break;
                     }
                 }
@@ -227,11 +294,6 @@ public class R3ExcelReader  {
         return OrgProvList;
     }
 
-
-    public void clearList(){
-        OrgProvList.clear();
-        ExtentManager.getExtentTest().log(Status.INFO,("Cleared the List"));
-    }
 }
 
 
